@@ -1,0 +1,80 @@
+import requests
+import json
+import google.generativeai as genai
+# Sample database of coping strategies
+strategies = {
+    "happy": ["It's great you're feeling positive! Keep it up!", "Would you like some motivational advice?"],
+    "sad": ["I'm sorry you're feeling down. Let's talk.", "It's okay to feel sad. How about a positive story?"],
+    "stressed": ["I can sense you're stressed. Let's breathe together.", "Take a moment to relax, how about a quick meditation?"],
+    "neutral": ["I’m here for you. How are you feeling?", "Would you like to talk more?"]
+}
+
+# Predefined responses for emotions
+responses = {
+    "happy": "I'm glad to hear you're feeling well! Is there anything you'd like to share?",
+    "sad": "I'm here for you, let's talk about what's on your mind.",
+    "stressed": "Feeling stressed can be tough. How can I help you feel better?",
+    "neutral": "How can I assist you today?"
+}
+
+# Function to analyze the sentiment using Gemini's API
+def analyze_sentiment(user_input):
+    # Call Gemini's API for sentiment analysis (hypothetical API call)
+    api_endpoint = "https://ai.google.dev/prompts/sentiment-analysis"
+    headers = {'Authorization': 'Bearer YOUR_API_KEY'}
+    data = {'text': user_input}
+
+    # Send the request
+    response = requests.post(api_endpoint, headers=headers, json=data)
+    
+    # Mock response from the Gemini API
+    #result = response.json()  # Assuming it returns {'emotion': 'happy'/'sad'/'stressed'/'neutral'}
+    #emotion = result.get('emotion', 'neutral')  # Default to neutral if undefined
+   #return emotion
+
+# Function to generate a response based on the emotion detected
+def generate_response(emotion):
+    return responses.get(emotion, "I'm here to support you.")
+
+# Function to offer coping strategies based on emotion
+def offer_support(emotion):
+    return strategies.get(emotion, ["Let's talk more about how you're feeling."])
+
+# Main chatbot function
+def chatbot():
+    print("Welcome to the Emotional Support Chatbot! How are you feeling today?")
+    
+    while True:
+        # Get user input
+        user_input = input("You: ")
+        
+        if user_input.lower() == "exit":
+            print("Goodbye! Take care of yourself.")
+            break
+
+        # Analyze sentiment using Gemini's API
+        emotion = analyze_sentiment(user_input)
+        
+        # Generate an appropriate response
+        response = generate_response(emotion)
+        
+        # Provide additional coping strategies
+        support = offer_support(emotion)
+        
+        # Log the conversation for future reference
+        log_conversation(user_input, response)
+        
+        # Print chatbot response and support
+        print(f"Chatbot: {response}")
+        for suggestion in support:
+            print(f"Suggestion: {suggestion}")
+
+# Function to log the conversation for future improvements (ensuring privacy and security)
+def log_conversation(user_input, response):
+    with open('chat_log.json', 'a') as log_file:
+        log_data = {"user_input": user_input, "response": response}
+        json.dump(log_data, log_file)
+        log_file.write("\n")
+
+# Run the chatbot
+chatbot()
